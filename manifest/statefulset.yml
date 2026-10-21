@@ -8,6 +8,7 @@ spec:
   selector:
     matchLabels:
       app: dbset                    # Pods managed by this StatefulSet must have this label
+
   template:
     metadata:
       labels:
@@ -15,18 +16,19 @@ spec:
     spec:
       containers:
       - name: db-container          # Name of the container
-        image: imjk04/pr6:dbimg  # Database image you specified
+        image: imjk04/pr6:dbimg     # Database image you specified
         ports:
         - containerPort: 3306       # Expose MySQL default port
         volumeMounts:
         - name: db-storage          # Must match volumeClaimTemplates.metadata.name
           mountPath: /var/lib/mysql # Path inside container where data is stored
-  volumeClaimTemplates:             # Each pod gets its own PVC
+
+  volumeClaimTemplates:            # Each pod gets its own PVC
   - metadata:
-      name: db-storage              # Match this name with volumeMounts.name
+      name: db-storage             # Match this name with volumeMounts.name
     spec:
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:
-          storage: 2Gi              # Each replica gets 2Gi of storage
-      storageClassName: gp2         # Adjust to your cluster’s storage class
+          storage: 2Gi             # Each replica gets 2Gi of storage
+      storageClassName: gp2        # Adjust to your cluster’s storage class
