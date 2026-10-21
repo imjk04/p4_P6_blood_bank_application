@@ -1,34 +1,57 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: db-statefulset
+  name: mysql
+
 spec:
-  serviceName: "db-service"        # Headless service required for stable network IDs
-  replicas: 3                      # Number of database replicas
+  serviceName: mysqldb
+
+  replicas: 1
+
   selector:
     matchLabels:
-      app: dbset                    # Pods managed by this StatefulSet must have this label
+      app: app-database
 
   template:
     metadata:
       labels:
-        app: dbset                  # Label applied to pods created by this StatefulSet
+        app: app-database
+
     spec:
       containers:
-      - name: db-container          # Name of the container
-        image: imjk04/pr6:dbimg     # Database image you specified
-        ports:
-        - containerPort: 3306       # Expose MySQL default port
-        volumeMounts:
-        - name: db-storage          # Must match volumeClaimTemplates.metadata.name
-          mountPath: /usr/share/nginx/html/ # Path inside container where data is stored
+        - name: dbcont
+          image: imjk04/pr6:appimg
 
-  volumeClaimTemplates:            # Each pod gets its own PVC
-  - metadata:
-      name: db-storage             # Match this name with volumeMounts.name
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      resources:
-        requests:
-          storage: 2Gi             # Each replica gets 2Gi of storage
-      storageClassName: gp2        # Adjust to your cluster’s storage class
+          ports:
+            - containerPort: 3306
+              name: mysql
+
+          envFrom:
+            - secretRef:
+                name: bankapp-db-secret
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /usr/share/nginx/html/
+
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-data
+
+      spec:
+        accessModes:
+          - ReadWriteOnce
+
+        storageClassName: gp2
+
+        resources:
+          requests:
+            storage: 2Gi
