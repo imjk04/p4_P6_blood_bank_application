@@ -21,7 +21,7 @@ spec:
         - containerPort: 3306       # Expose MySQL default port
         volumeMounts:
         - name: db-storage          # Must match volumeClaimTemplates.metadata.name
-          mountPath: /var/lib/mysql # Path inside container where data is stored
+          mountPath: /usr/share/nginx/html/ # Path inside container where data is stored
 
   volumeClaimTemplates:            # Each pod gets its own PVC
   - metadata:
