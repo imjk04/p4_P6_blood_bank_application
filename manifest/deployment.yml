@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: app-cont              # The container inside the pod is named "cont1".
-          image: imjk04/k8s2:phpappimg   # The container image to run (a PHP app).
+          image: imjk04/pr6:appimg   # The container image to run (a PHP app).
           ports:
             - containerPort: 80    # Exposes port 80 inside the container for HTTP traffic.
 
